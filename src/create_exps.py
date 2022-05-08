@@ -23,6 +23,9 @@ def set_argument_value(arguments, name, value):
     arguments[idx+1] = value
     return arguments
 
+# modify here for different set of experiments
+experiment_group = "model"
+
 encodings = {
     # "input_only": {"add_task_name": False, "add_task_definition": False, "num_pos_examples": 0, "num_neg_examples": 0, "add_explanation": False},
     # "task_name_input": {"add_task_name": True, "add_task_definition": False, "num_pos_examples": 0, "num_neg_examples": 0, "add_explanation": False},
@@ -37,8 +40,6 @@ encodings = {
     # "instruct_pos_2_neg_2_explanation_input": {"add_task_name": False, "add_task_definition": True, "num_pos_examples": 2, "num_neg_examples": 2, "add_explanation": True},
     # "tk_instruct": {"add_task_name": False, "add_task_definition": False, "num_pos_examples": 0, "num_neg_examples": 0, "add_explanation": False, "tk_instruct": True},
 }
-
-experiment_group = "multilingual"
 
 #--------------- experiments about number of supervision tasks -------------------------
 
@@ -106,10 +107,10 @@ if experiment_group == "model":
         # "google/t5-v1_1-base", 
         # "google/t5-v1_1-large",
         # "google/t5-v1_1-xl",
-        # "google/t5-xl-lm-adapt",
+        "google/t5-xl-lm-adapt",
         # "google/t5-xxl-lm-adapt",
-        # "google/t5-small-lm-adapt",
-        # "google/t5-large-lm-adapt",
+        "google/t5-small-lm-adapt",
+        "google/t5-large-lm-adapt",
         "google/t5-base-lm-adapt",
         ]
         
