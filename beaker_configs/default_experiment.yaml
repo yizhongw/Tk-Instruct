@@ -1,10 +1,8 @@
 version: v2-alpha
 description: natural instructions
 tasks:
-  # We only have one step in our experiment, so there's only one entry in this list
   - name: instruct
     image:
-      # You will want to replace `username` below with your Beaker username
       beaker: Yizhongw03/ni-exp
     command: [
       # deepspeed
@@ -31,7 +29,7 @@ tasks:
       "--add_explanation", False,
       "--tk_instruct", False,
       # path 
-      "--data_dir", "/data/cross_category/default", 
+      "--data_dir", "/data/splits/default", 
       "--task_dir", "/data/tasks", 
       "--output_dir", "/output/",
       "--overwrite_output_dir",
