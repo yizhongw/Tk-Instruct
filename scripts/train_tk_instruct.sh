@@ -29,7 +29,7 @@ deepspeed --master_port $port src/run_s2s.py \
     --tk_instruct False \
     --data_dir data/splits/default \
     --task_dir data/tasks \
-    --output_dir /output/ \
+    --output_dir output/ \
     --overwrite_output_dir \
     --cache_dir ./cache/ \
     --overwrite_cache \
