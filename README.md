@@ -24,6 +24,16 @@ Note: after the main exploration with 3B model, we train our 11B model on TPUs u
 
 ## Data
 
+Our models are trained and evaluated on [Natural Instructions V2](https://github.com/allenai/natural-instructions), which can be cloned by running:
+
+```bash
+git clone git@github.com:allenai/natural-instructions.git data
+```
+
+Since Natural Instructions V2 didn't provide an official split for the development set, in order to do evaluation during training time, you can mannualy create a `dev_tasks.txt` in the `data/splits/default` folder. We found it unclear what should be a meaningful validation set, under such cross-task generalization setting. You can use a part of the training tasks for validation, or you can set apart tasks in some categories for validation.
+
+If you want to use the T5 code [here](https://github.com/google-research/text-to-text-transfer-transformer), you can convert the data into text2text format with [`scripts/convert_data_to_s2s.sh`](scripts/convert_data_to_s2s.sh).
+
 ## Training
 
 A sample script for training the Tk-Instruct 3B model in our paper can be found at [`scripts/train_tk_instruct.sh`](scripts/train_tk_instruct.sh). You can run it as follows:
