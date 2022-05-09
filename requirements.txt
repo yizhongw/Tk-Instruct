@@ -1,8 +1,5 @@
-# git+https://github.com/huggingface/transformers.git@52d2e6f6e904ef9b75c78716ce77b98196ed837a
-# git+https://github.com/stas00/transformers.git@ds-bf16
 transformers==4.17.0
 datasets==1.17.0
-# git+https://github.com/microsoft/DeepSpeed.git@2151c787a27166f795eb4516f1e191e6730e823d
 git+https://github.com/microsoft/DeepSpeed.git@9f7126fc10a1f231c695db11632cbcb84f1af4d3
 fairscale==0.4.5
 ipython
