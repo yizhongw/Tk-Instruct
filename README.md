@@ -43,11 +43,20 @@ python src/create_exps.py
 Our 3B and 11B model checkpoints are accessible via the [Hugging Face Hub](https://huggingface.co/models?search=tk-instruct-). You can load them easily using the [Transformers](https://github.com/huggingface/transformers) library:
 
 ```python
->>> from transformers import AutoTokenizer, AutoModel
+>>> from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 >>> tokenizer = AutoTokenizer.from_pretrained("allenai/tk-instruct-3b-def")
->>> model = AutoModel.from_pretrained("allenai/tk-instruct-3b-def")
+>>> model = AutoModelForSeq2SeqLM.from_pretrained("allenai/tk-instruct-3b-def")
+
+>>> input_ids = tokenizer.encode(
+        "Definition: return the currency of the given country. Now complete the following example - Input: India. Output:", 
+        return_tensors="pt"
+    )
+>>> output = model.generate(input_ids, max_length=10)
+>>> output = tokenizer.decode(output[0], skip_special_tokens=True)
 ```
+
+The model should generate `'Indian Rupee'` as the output.
 
 ## Evaluation
 
@@ -70,13 +79,15 @@ The numbers for heuristic baselines and GPT3 can be reproduced by using the foll
 
 ## Model Predictions
 
-TBD
+We are going to release the predictions of our models and baseline methods soon!
 
 ## Citation
 
+```bib
 @article{wang2022benchmarking,
   title={Benchmarking Generalization via In-Context Instructions on 1,600+ Language Tasks},
   author={Wang, Yizhong and Mishra, Swaroop and Alipoormolabashi, Pegah and Kordi, Yeganeh and others},
   journal={arXiv preprint arXiv:2204.07705},
   year={2022}
 }
+```
