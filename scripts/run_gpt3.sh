@@ -45,12 +45,12 @@ python src/run_gpt3.py \
 python src/compute_metrics.py ${output_dir}/instruct_pos_2/${engine}/gpt3_predictions.json
 done
 
-echo "multilingual instruction + 2 positive examples"
+echo "xlingual instruction + 2 positive examples"
 for engine in "text-davinci-001" "davinci"
 do
 echo $engine
 python src/run_gpt3.py \
-    --data_dir data/splits/multilingual/ \
+    --data_dir data/splits/xlingual/ \
     --task_dir $task_dir \
     --max_num_instances_per_task 1 \
     --max_num_instances_per_eval_task ${max_num_instances_per_eval_task} \
@@ -61,8 +61,8 @@ python src/run_gpt3.py \
     --max_source_length 1024 \
     --max_target_length 128 \
     --engine ${engine} \
-    --output_dir ${output_dir}/multilingual/${engine}
-python src/compute_metrics.py ${output_dir}/multilingual/${engine}/gpt3_predictions.json
+    --output_dir ${output_dir}/xlingual/${engine}
+python src/compute_metrics.py ${output_dir}/xlingual/${engine}/gpt3_predictions.json
 done
 
 # echo "instruction + 2 positive example + 2 negtive example"
