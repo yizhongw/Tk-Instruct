@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Lint as: python3
-"""Natural Instruction Dataset."""
+"""Natural Instruction V2 Dataset."""
 
 
 import json
@@ -25,35 +25,22 @@ import datasets
 logger = datasets.logging.get_logger(__name__)
 
 _CITATION = """
-@article{mishra2021natural,
-  author    = {Swaroop Mishra and
-               Daniel Khashabi and
-               Chitta Baral and
-               Hannaneh Hajishirzi},
-  title     = {Natural Instructions: Benchmarking Generalization to New Tasks from
-               Natural Language Instructions},
-  journal   = {CoRR},
-  volume    = {abs/2104.08773},
-  year      = {2021},
-  url       = {https://arxiv.org/abs/2104.08773},
-  eprinttype = {arXiv},
-  eprint    = {2104.08773}
+@article{wang2022benchmarking,
+  title={Benchmarking Generalization via In-Context Instructions on 1,600+ Language Tasks},
+  author={Wang, Yizhong and Mishra, Swaroop and Alipoormolabashi, Pegah and Kordi, Yeganeh and others},
+  journal={arXiv preprint arXiv:2204.07705},
+  year={2022}
 }
 """
 
 _DESCRIPTION = """
-Natural Instructions: Benchmarking Generalization to New Tasks from Natural Language Instructions
-
-There are several features:
-  - text: bill text.
-  - summary: summary of the bills.
-  - title: title of the bills.
-features for us bills. ca bills does not have.
-  - text_len: number of chars in text.
-  - sum_len: number of chars in summary.
+Natural-Instructions v2 is a benchmark of 1,600+ diverse language tasks and their expert-written instructions. 
+It covers 70+ distinct task types, such as tagging, in-filling, and rewriting. 
+These tasks are collected with contributions of NLP practitioners in the community and 
+through an iterative peer review process to ensure their quality. 
 """
 
-_URL = "TBD"
+_URL = "https://instructions.apps.allenai.org/"
 
 class NIConfig(datasets.BuilderConfig):
     def __init__(self, *args, task_dir=None, max_num_instances_per_task=None, max_num_instances_per_eval_task=None, **kwargs):
