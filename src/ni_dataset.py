@@ -136,10 +136,10 @@ class NaturalInstructions(datasets.GeneratorBasedBuilder):
             datasets.SplitGenerator(
                 name=datasets.Split.VALIDATION,
                 gen_kwargs={
-                    "path": os.path.join(split_dir, "test_tasks.txt"), 
+                    "path": os.path.join(split_dir, "dev_tasks.txt"), 
                     "task_dir": task_dir,
                     "max_num_instances_per_task": self.config.max_num_instances_per_eval_task,
-                    "subset": "test"
+                    "subset": "dev"
                 }),
             datasets.SplitGenerator(
                 name=datasets.Split.TEST,
