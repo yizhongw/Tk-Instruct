@@ -6,7 +6,7 @@
 
 ## Requirements
 
-Our experiments are conducted on the following environment:
+Our main experiments and analysis are conducted on the following environment:
 
 - CUDA (11.3)
 - cuDNN (8.2.0.53)
@@ -20,7 +20,7 @@ You can refer to the [Dockerfile](Dockerfile) for setting up the environment and
 pip install -r requirements.txt
 ```
 
-Note: our 11B models are trained on TPUs using the T5 code [here](https://github.com/google-research/text-to-text-transfer-transformer).
+Note: after the main exploration with 3B model, we train our 11B model on TPUs using the T5 code [here](https://github.com/google-research/text-to-text-transfer-transformer).
 
 ## Data
 
