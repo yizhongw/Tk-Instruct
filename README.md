@@ -38,9 +38,16 @@ However, if you are familiar with [Beaker](https://beaker.org/), you can refer t
 python src/create_exps.py
 ```
 
-## Checkpoints
+## Released Checkpoints
 
-Our 3B and 11B model checkpoints are accessible via [Huggingface Hub](https://huggingface.co/models?search=tk-instruct-).
+Our 3B and 11B model checkpoints are accessible via the [Hugging Face Hub](https://huggingface.co/models?search=tk-instruct-). You can load them easily using the [Transformers](https://github.com/huggingface/transformers) library:
+
+```python
+>>> from transformers import AutoTokenizer, AutoModel
+
+>>> tokenizer = AutoTokenizer.from_pretrained("allenai/tk-instruct-3b-def")
+>>> model = AutoModel.from_pretrained("allenai/tk-instruct-3b-def")
+```
 
 ## Evaluation
 
@@ -64,3 +71,12 @@ The numbers for heuristic baselines and GPT3 can be reproduced by using the foll
 ## Model Predictions
 
 TBD
+
+## Citation
+
+@article{wang2022benchmarking,
+  title={Benchmarking Generalization via In-Context Instructions on 1,600+ Language Tasks},
+  author={Wang, Yizhong and Mishra, Swaroop and Alipoormolabashi, Pegah and Kordi, Yeganeh and others},
+  journal={arXiv preprint arXiv:2204.07705},
+  year={2022}
+}
