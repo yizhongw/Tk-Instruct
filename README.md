@@ -1,7 +1,9 @@
 # Tk-Instruct
 
 - This repo releases our implementation for the Tk-Instruct model in the [Natural Instructions V2 paper](https://arxiv.org/abs/2204.07705).
-- Tk-Instruct is a preliminary attempt towards general-purpose AI that can solve new tasks by following instructions. It is built based on the pretrained [T5 model](https://arxiv.org/abs/1910.10683), and finetuned on our [data](https://github.com/allenai/natural-instructions).
+- Tk-Instruct is a preliminary attempt towards general-purpose AI that can solve NLP tasks by following in-context instructions (plain language task definitions or k-shot examples).
+- It is built based on the pretrained [T5 model](https://arxiv.org/abs/1910.10683), and finetuned on our [data](https://github.com/allenai/natural-instructions).
+- We are going to release our demo soon. Stay tuned!
 <!-- - You can play with this model via our online [demo](https://instructions.apps.allenai.org/demo)! -->
 
 ## Requirements
