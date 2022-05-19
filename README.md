@@ -29,7 +29,7 @@ Note: after the main exploration with 3B model, we train our 11B model on TPUs u
 Our models are trained and evaluated on [Natural Instructions V2](https://github.com/allenai/natural-instructions), which can be cloned by running:
 
 ```bash
-git clone git@github.com:allenai/natural-instructions.git data
+git clone https://github.com/yizhongw/Tk-Instruct.git data
 ```
 
 Since Natural Instructions V2 didn't provide an official split for the development set, in order to do evaluation during training time, you can mannualy create a `dev_tasks.txt` in the `data/splits/default` folder. We found it unclear what should be a meaningful validation set, under such cross-task generalization setting. You can use a part of the training tasks for validation, or you can set apart tasks in some categories for validation.
