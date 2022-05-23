@@ -64,14 +64,13 @@ if __name__ == "__main__":
 
     existing_requests = {}
     if os.path.exists(os.path.join(args.output_dir, "gpt3_predictions.json")):
-        
         with open(os.path.join(args.output_dir, "gpt3_predictions.json")) as fin:
             for line in fin:
                 request_info = json.loads(line)
                 existing_requests[request_info["gpt3_input"]] = request_info["gpt3_response"]
 
     with open(os.path.join(args.output_dir, "gpt3_predictions.json"), "w") as fout:
-        for example in tqdm.tqdm(raw_datasets["validation"]):
+        for example in tqdm.tqdm(raw_datasets["test"]):
             encoded_example = data_collator([example])
             example["gpt3_input"] = encoded_example["inputs"][0].strip()
             example["gpt3_target"] = encoded_example["labels"][0].strip()

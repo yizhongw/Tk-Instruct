@@ -5,8 +5,9 @@ export CUDA_DEVICE_ORDER="PCI_BUS_ID"
 export TRANSFORMERS_CACHE=/home/yizhongw/.cache/huggingface
 
 python src/run_s2s.py \
-    --do_eval \
+    --do_predict \
     --predict_with_generate \
+    --evaluation_strategy "no" \
     --model_name_or_path allenai/tk-instruct-3b-def-pos \
     --max_source_length 1024 \
     --max_target_length 128 \
