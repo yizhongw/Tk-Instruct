@@ -6,7 +6,7 @@ from datetime import date
 
 today = date.today().strftime("%m%d%Y")
 
-with open("exp_configs/default_experiment.yaml", 'r') as f:
+with open("beaker_configs/default_experiment.yaml", 'r') as f:
     default_yaml = f.read()
 d1 = yaml.load(default_yaml)
 
@@ -24,7 +24,7 @@ def set_argument_value(arguments, name, value):
     return arguments
 
 # modify here for different set of experiments
-experiment_group = "model"
+experiment_group = "eval_pretrained_models"
 
 encodings = {
     # "input_only": {"add_task_name": False, "add_task_definition": False, "num_pos_examples": 0, "num_neg_examples": 0, "add_explanation": False},
@@ -60,7 +60,7 @@ if experiment_group == "num_of_tasks":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -87,7 +87,7 @@ if experiment_group == "num_of_instances":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -163,7 +163,7 @@ if experiment_group == "model":
             
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -193,7 +193,7 @@ if experiment_group == "hyper_tuning":
 
             print(d)
 
-            fn = "exp_configs/{}.yaml".format(name)
+            fn = "beaker_configs/{}.yaml".format(name)
             file = open(fn, "w")
             yaml.dump(d, file, default_flow_style=True)
             file.close()
@@ -225,7 +225,7 @@ if experiment_group == "encoding":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -251,7 +251,7 @@ if experiment_group == "test_sets":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -277,7 +277,7 @@ if experiment_group == "splits":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -289,13 +289,15 @@ if experiment_group == "splits":
 #--------------- no-finetuning transfer of pretrained models -------------------------
 if experiment_group == "eval_pretrained_models":
     model_names = [
-        # "google/t5-xl-lm-adapt",
-        # "google/t5-xxl-lm-adapt",
-        # "bigscience/T0",
-        # "bigscience/T0_3B",
+        "google/t5-xl-lm-adapt",
+        "google/t5-xxl-lm-adapt",
+        "bigscience/T0",
+        "bigscience/T0_3B",
         # "t5-large",
         # "google/t5-large-lm-adapt",
-        "google/mt5-xxl"
+        # "google/mt5-xxl",
+        "allenai/tk-instruct-11b-def-pos",
+        "allenai/tk-instruct-3b-def-pos", 
     ]
 
     for model_name in model_names:
@@ -311,7 +313,9 @@ if experiment_group == "eval_pretrained_models":
             assert d['tasks'][0]['command'][3].endswith(".py")
             # d['tasks'][0]['command'] = ["python"] + d['tasks'][0]['command'][3:] 
             d['tasks'][0]['command'].remove("--do_train")
-            d['tasks'][0]['command'].remove("--do_predict") 
+            d['tasks'][0]['command'].remove("--do_eval")
+            d['tasks'][0]['command'].append("--evaluation_strategy")
+            d['tasks'][0]['command'].append("no")
             d['tasks'][0]['command'].remove("--bf16")
             # d['tasks'][0]['command'].remove("--deepspeed")
             # d['tasks'][0]['command'].remove("ds_configs/stage2.config")
@@ -338,9 +342,9 @@ if experiment_group == "eval_pretrained_models":
                 set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 16)
             elif "large" in model_name:
                 set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 8)
-            elif "3b" in model_name or "-xl" in model_name:
+            elif "3b" in model_name or "3B" in model_name or "-xl" in model_name:
                 set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 4)
-            elif "11b" in model_name or "-xxl" in model_name or model_name == "bigscience/T0":
+            elif "11b" in model_name or "11B" in model_name or "-xxl" in model_name or model_name == "bigscience/T0":
                 set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 1)
                 d['tasks'][0]['resources']['gpuCount'] = 8
                 set_argument_value(d['tasks'][0]['command'], "--deepspeed", "ds_configs/stage3.config")
@@ -348,7 +352,7 @@ if experiment_group == "eval_pretrained_models":
             set_argument_value(d['tasks'][0]['command'], "--run_name", name)
             print(d)
 
-            fn = "exp_configs/{}.yaml".format(name)
+            fn = "beaker_configs/{}.yaml".format(name)
             file = open(fn, "w")
             yaml.dump(d, file, default_flow_style=True)
             file.close()
@@ -414,7 +418,7 @@ if experiment_group == "eval_ckpt":
             set_argument_value(d['tasks'][0]['command'], "--run_name", name) 
             print(d)
 
-            fn = "exp_configs/{}.yaml".format(name)
+            fn = "beaker_configs/{}.yaml".format(name)
             file = open(fn, "w")
             yaml.dump(d, file, default_flow_style=True)
             file.close()
@@ -449,7 +453,7 @@ if experiment_group == "supervised":
 
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()
@@ -513,7 +517,7 @@ if experiment_group == "multilingual":
         
         print(d)
 
-        fn = "exp_configs/{}.yaml".format(name)
+        fn = "beaker_configs/{}.yaml".format(name)
         file = open(fn, "w")
         yaml.dump(d, file, default_flow_style=True)
         file.close()

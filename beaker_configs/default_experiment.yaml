@@ -72,7 +72,7 @@ tasks:
     datasets:
       - mountPath: /data
         source:
-          beaker: Yizhongw03/natural_instructions_0412
+          beaker: Yizhongw03/natural_instructions_release_0501
     result:
       # Beaker will capture anything that's written to this location and store it in the results
       # dataset.
