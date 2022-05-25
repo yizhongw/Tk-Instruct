@@ -13,7 +13,6 @@ deepspeed --master_port $port src/run_s2s.py \
     --predict_with_generate \
     --metric_for_best_model rougeL \
     --greater_is_better True \
-    --denser_evaluation True \
     --model_name_or_path google/t5-xl-lm-adapt \
     --max_source_length 1024 \
     --max_target_length 128 \
