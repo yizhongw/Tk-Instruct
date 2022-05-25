@@ -3,7 +3,6 @@ set -x
 
 export CUDA_DEVICE_ORDER="PCI_BUS_ID"
 export TRANSFORMERS_CACHE=/home/yizhongw/.cache/huggingface
-export WANDB_DISABLED="true"
 
 port=$(shuf -i25000-30000 -n1)
 
@@ -48,6 +47,4 @@ deepspeed --master_port $port src/run_s2s.py \
     --save_steps 2500 \
     --deepspeed ds_configs/stage2.config \
     --bf16 \
-    --disable_tqdm True \
-    --report_to wandb \
     --run_name t5-experiment
