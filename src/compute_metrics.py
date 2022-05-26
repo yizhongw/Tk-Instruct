@@ -3,24 +3,32 @@ import re
 import json
 import sys
 import os
+import argparse
 import logging
 from collections import Counter
 from rouge import rouge_scorer
+from transformers import AutoTokenizer
 
 
 logger = logging.getLogger(__name__)
 
+class GPTTokenizer:
+    gpt_tokenizer = AutoTokenizer.from_pretrained("gpt2", max_length=1e5)
 
-class SplitTokenizer:
     def tokenize(self, s):
-        return s.split()
+        tokens = self.gpt_tokenizer.tokenize(s)
+        # GPT2 uses Byte-level BPE, which will include space as part of the word. 
+        # But for the first word of a sentence, there is no space before it. 
+        # So, we remove all the added spaces ("Ġ"). 
+        tokens = [t.lstrip("Ġ") for t in tokens]
+        return tokens
+
+xlingual_tokenizer = GPTTokenizer()
 
 
-# copy the flowing from Squad v1.1 evaluation
+# adapted the flowing from Squad v1.1 evaluation, without removing the articles.
 def normalize_answer(s):
-    """Lower text and remove punctuation, articles and extra whitespace."""
-    # def remove_articles(text):
-    #     return re.sub(r'\b(a|an|the)\b', ' ', text)
+    """Lower text and remove punctuation, and extra whitespace."""
 
     def white_space_fix(text):
         return ' '.join(text.split())
@@ -35,76 +43,59 @@ def normalize_answer(s):
     return white_space_fix(remove_punc(lower(s)))
 
 
-def f1_score(prediction, ground_truth):
-    prediction_tokens = normalize_answer(prediction).split()
-    ground_truth_tokens = normalize_answer(ground_truth).split()
-    common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
-    num_same = sum(common.values())
-    if num_same == 0:
-        return 0
-    precision = 1.0 * num_same / len(prediction_tokens)
-    recall = 1.0 * num_same / len(ground_truth_tokens)
-    f1 = (2 * precision * recall) / (precision + recall)
-    return f1
-
-
-def exact_match_score(prediction, ground_truth):
+def exact_match_score(prediction, ground_truth, xlingual=False):
     return (normalize_answer(prediction) == normalize_answer(ground_truth))
 
 
-def metric_max_over_ground_truths(metric_fn, prediction, ground_truths):
-    scores_for_ground_truths = []
-    for ground_truth in ground_truths:
-        score = metric_fn(prediction, ground_truth)
-        scores_for_ground_truths.append(score)
-    return max(scores_for_ground_truths)
-
-
-def rouge1_score(prediction, ground_truth, non_en=False):
-    if not non_en:
-        scorer = rouge_scorer.RougeScorer(['rouge1'], use_stemmer=True)
+def rouge1_score(prediction, ground_truth, xlingual=False):
+    if xlingual:
+        scorer = rouge_scorer.RougeScorer(['rouge1'], tokenizer=xlingual_tokenizer)
     else:
-        scorer = rouge_scorer.RougeScorer(['rouge1'], tokenizer=SplitTokenizer()) 
+        scorer = rouge_scorer.RougeScorer(['rouge1'], use_stemmer=True)
     scores = scorer.score(prediction=prediction, target=ground_truth)
     return scores["rouge1"].fmeasure
 
 
-def rougeL_score(prediction, ground_truth, non_en=False):
-    if not non_en:
-        scorer = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
+def rougeL_score(prediction, ground_truth, xlingual=False):
+    if xlingual:
+        scorer = rouge_scorer.RougeScorer(['rougeL'], tokenizer=xlingual_tokenizer) 
     else:
-        scorer = rouge_scorer.RougeScorer(['rougeL'], tokenizer=SplitTokenizer()) 
+        scorer = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
     scores = scorer.score(prediction=prediction, target=ground_truth)
     return scores["rougeL"].fmeasure
 
 
-def compute_metrics(predictions, references):
+def metric_max_over_ground_truths(metric_fn, prediction, ground_truths, xlingual=False):
+    scores_for_ground_truths = []
+    for ground_truth in ground_truths:
+        score = metric_fn(prediction, ground_truth, xlingual=xlingual)
+        scores_for_ground_truths.append(score)
+    return max(scores_for_ground_truths)
+
+
+def compute_metrics(predictions, references, xlingual=False):
     assert len(predictions) == len(references), f"# of predictions {len(predictions)} doesn't match # of references {len(references)}."
-    exact_match, f1, rouge1, rougeL = 0, 0, 0, 0
+    exact_match, rouge1, rougeL = 0, 0, 0
     for pred, gold in zip(predictions, references):
         assert isinstance(gold, list)
         exact_match += metric_max_over_ground_truths(
-            exact_match_score, prediction=pred, ground_truths=gold
-        )
-        f1 += metric_max_over_ground_truths(
-            f1_score, prediction=pred, ground_truths=gold
+            exact_match_score, prediction=pred, ground_truths=gold, xlingual=xlingual
         )
         rouge1 += metric_max_over_ground_truths(
-            rouge1_score, prediction=pred, ground_truths=gold
+            rouge1_score, prediction=pred, ground_truths=gold, xlingual=xlingual
         )
         rougeL += metric_max_over_ground_truths(
-            rougeL_score, prediction=pred, ground_truths=gold
+            rougeL_score, prediction=pred, ground_truths=gold, xlingual=xlingual
         )
     exact_match = 100.0 * exact_match / len(references)
-    f1 = 100.0 * f1 / len(references)
     rouge1 = 100.0 * rouge1 / len(references)
     rougeL = 100.0 * rougeL / len(references)
-    metrics = {'exact_match': exact_match, 'f1': f1, "rouge1": rouge1, "rougeL": rougeL}
+    metrics = {"exact_match": exact_match, "rouge1": rouge1, "rougeL": rougeL}
     metrics = {k: round(v, 4) for k, v in metrics.items()}
     return metrics
 
 
-def compute_grouped_metrics(predictions, references, groups):
+def compute_grouped_metrics(predictions, references, groups, xlingual=False):
     assert len(predictions) == len(references) == len(groups)
 
     examples_by_group = {}
@@ -116,22 +107,29 @@ def compute_grouped_metrics(predictions, references, groups):
     results = {}
     for group, group_examples in examples_by_group.items():
         task_predictions, task_references = zip(*group_examples)
-        group_metrics = compute_metrics(task_predictions, task_references)
+        group_metrics = compute_metrics(task_predictions, task_references, xlingual=xlingual)
         for metric, value in group_metrics.items():
             results[f"{metric}_for_{group}"] = value
     return results
 
 
-if __name__ == "__main__":
-    with open(sys.argv[1]) as fin:
-        examples = [json.loads(l) for l in fin]
-        examples = [e for e in examples if not e["Task"].startswith("task1415_")] # remove task1415
-    
-    if "gpt3" in os.path.basename(sys.argv[1]):
-        for example in examples:
-            example["Prediction"] = example["gpt3_response"]["choices"][0]["text"].strip().split(".")[0]
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--predictions", required=True, help="Path to predictions file.")
+    parser.add_argument("--track", choices=["default", "xlingual"], default="default", 
+        help="default track or xlingual track. For xlingual, we need to use a different tokenizer."
+    )
+    parser.add_argument("--compute_per_category_metrics", action="store_true", help="Compute metrics on every evaluation category.")
+    parser.add_argument("--compute_per_task_metrics", action="store_true", help="Compute metrics on every evaluation task.")
+    return parser.parse_args()
 
-    predictions = [e["Prediction"] for e in examples]
+
+if __name__ == "__main__":
+    args = parse_args()
+    with open(args.predictions) as fin:
+        examples = [json.loads(l) for l in fin]
+
+    predictions = [e["prediction"] for e in examples]
     references = [e["Instance"]["output"] for e in examples]
     tasks = []
     for e in examples:
@@ -139,17 +137,12 @@ if __name__ == "__main__":
             e["Task"] = "task121_zest_question_rewriting"
         tasks.append(e["Task"])
 
-    results = compute_metrics(predictions, references)
+    results = compute_metrics(predictions, references, xlingual=args.track == "xlingual")
+    print("======== Overall Metrics ========")
     print("all_rougeL", results["rougeL"])
     print("all_EM", results["exact_match"])
+    print()
     
-    task_category = {}
-    for task in set(tasks):
-        with open(os.path.join("./data/tasks/", task+".json")) as fin:
-            task_data = json.load(fin)
-            task_category[task] = "_".join(task_data["Categories"][0].lower().split())
-    categories = [task_category[e["Task"]] for e in examples] 
-    results.update(compute_grouped_metrics(predictions, references, categories))
     category_metrics = [
         ("Textual Entailment", "exact_match"),
         ("Cause Effect Classification", "exact_match"),
@@ -164,14 +157,29 @@ if __name__ == "__main__":
         ("Data to Text", "rougeL"),
         ("Grammar Error Correction", "rougeL"),
     ]
-    for category, metric in category_metrics:
-        category = "_".join(category.lower().split())
-        if f"{metric}_for_{category}" in results:
-            print(f"{metric}_for_{category}", results[f"{metric}_for_{category}"])
-            
     category_metrics = {"_".join(category.lower().split()): metric for category, metric in category_metrics}
-    results_by_task = compute_grouped_metrics(predictions, references, tasks)
-    for task in sorted(list(set(tasks))):
-        category = task_category[task]
-        metric = category_metrics[category]
-        print(task, results_by_task[f"{metric}_for_{task}"])
+
+    if args.compute_per_category_metrics:
+        print("======== Metrics per category ========")
+        task_category = {}
+        for task in set(tasks):
+            with open(os.path.join("./data/tasks/", task+".json")) as fin:
+                task_data = json.load(fin)
+                task_category[task] = "_".join(task_data["Categories"][0].lower().split())
+        categories = [task_category[e["Task"]] for e in examples] 
+        results.update(compute_grouped_metrics(predictions, references, categories, xlingual=args.track=="xlingual"))
+        
+        for category, metric in category_metrics.items():
+            # category = "_".join(category.lower().split())
+            if f"{metric}_for_{category}" in results:
+                print(f"{metric}_for_{category}", results[f"{metric}_for_{category}"])
+        print()
+            
+    if args.compute_per_task_metrics:
+        print("======== Metrics per task ========")
+        results_by_task = compute_grouped_metrics(predictions, references, tasks, xlingual=args.track=="xlingual")
+        for task in sorted(list(set(tasks))):
+            category = task_category[task]
+            metric = category_metrics[category]
+            print(task, results_by_task[f"{metric}_for_{task}"])
+        print()
