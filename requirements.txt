@@ -1,4 +1,4 @@
-transformers==4.17.0
+transformers==4.18.0
 datasets==1.17.0
 git+https://github.com/microsoft/DeepSpeed.git@9f7126fc10a1f231c695db11632cbcb84f1af4d3
 fairscale==0.4.5
