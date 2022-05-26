@@ -89,9 +89,32 @@ The numbers for heuristic baselines and GPT3 can be reproduced by using the foll
 ./scripts/run_gpt3.sh
 ```
 
-## Model Predictions
+## Model Predictions and Performance
 
-We are going to release the predictions of our models and baseline methods soon!
+The predictions of our tested models can be found in the [`output`](output/) folder. You can evaluate each predition file in the following way:
+
+```bash
+python src/compute_metrics.py --predictions output/default/tk-instruct-3b-def-pos/predicted_examples.jsonl --track default --compute_per_category_metrics
+python src/compute_metrics.py --predictions output/xlingual/mtk-instruct-3b-def-pos/predicted_examples.jsonl --track xlingual --compute_per_category_metrics
+```
+
+Here are the performance numbers (in ROUGE-L) for our tested models:
+
+|                          | Models                  | Default Track (en) | X-lingual Track |
+|--------------------------|-------------------------|--------------------|-----------------|
+| Heuristic Baselines      | Copying Instance Input  | 14.20              | 5.44            |
+|                          | Copying Demo. Output    | 28.54              | 50.31           |
+| Pretrained LMs           | T5-LM (11B)             | 30.16              | -               |
+|                          | GPT3 (175B)             | 45.05              | 51.20           |
+| Instruction-tuned Models | T0 (11B)                | 32.28              | -               |
+|                          | GPT3-Instruct (175B)    | 52.06              | 53.74           |
+|                          | Tk-Instruct (Ours, 3B)  | 54.33              | -               |
+|                          | Tk-Instruct (Ours, 11B) | 60.07              | -               |
+|                          | mTk-Instruct (Ours, 3B) | -                  | 56.72           |
+
+Note that these numbers might be different from the numbers reported in the our arxiv paper, because we 1) resampled our evaluation instances; 2) updated our evaluation script. We will update the paper once allowed.
+
+We will keep adding the predictions and performance of new models into this repository.
 
 ## Citation
 
