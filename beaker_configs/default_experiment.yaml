@@ -9,12 +9,8 @@ tasks:
       "deepspeed", "--master_port", 10086, 
       # what to do
       "src/run_s2s.py", 
-      "--do_train", "--do_eval", "--do_predict", 
+      "--do_train", "--do_predict", 
       "--predict_with_generate", 
-      # "--load_best_model_at_end",
-      "--metric_for_best_model", "rougeL",
-      "--greater_is_better", True,
-      "--denser_evaluation", True,
       # model
       "--model_name_or_path", "google/t5-xl-lm-adapt", 
       "--max_source_length", 1024,
@@ -46,8 +42,7 @@ tasks:
       "--warmup_steps", 0, 
       "--logging_strategy", "steps", 
       "--logging_steps", 500, 
-      "--evaluation_strategy", "steps", 
-      "--eval_steps", 500, 
+      "--evaluation_strategy", "no", 
       "--save_strategy", "steps", 
       "--save_steps", 2500,
       # deepspeed 
