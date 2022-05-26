@@ -1,9 +1,9 @@
-from base64 import encode
 import glob
 import json
 import openai
 import tqdm
 import os
+import random
 from transformers import HfArgumentParser, GPT2TokenizerFast
 from run_s2s import DataTrainingArguments
 from datasets import load_dataset
@@ -33,6 +33,7 @@ class GPT3Arguments(DataTrainingArguments):
 
 
 if __name__ == "__main__":
+    random.seed(123)
     parser = HfArgumentParser((GPT3Arguments,))
     args, = parser.parse_args_into_dataclasses()
     raw_datasets = load_dataset(
@@ -87,6 +88,7 @@ if __name__ == "__main__":
                     presence_penalty=0
                 )
             example["gpt3_response"] = response
+            example["prediction"] = example["gpt3_response"]["choices"][0]["text"].strip().split(".")[0]
             fout.write(json.dumps(example) + "\n")
 
         
