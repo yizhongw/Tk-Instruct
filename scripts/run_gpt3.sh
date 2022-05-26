@@ -23,7 +23,7 @@ python src/run_gpt3.py \
     --max_target_length 128 \
     --engine ${engine} \
     --output_dir ${output_dir}/default/gpt3/${engine}
-python src/compute_metrics.py --predictions ${output_dir}/default/gpt3/${engine}/predicted_examples.json --track default
+python src/compute_metrics.py --predictions ${output_dir}/default/gpt3/${engine}/predicted_examples.jsonl --track default
 done
 
 echo "xlingual instruction + 2 positive examples"
@@ -44,5 +44,5 @@ python src/run_gpt3.py \
     --max_target_length 128 \
     --engine ${engine} \
     --output_dir ${output_dir}/xlingual/gp3/${engine}
-python src/compute_metrics.py --predictions ${output_dir}/xlingual/gpt3/${engine}/predicted_examples.json --track xlingual
+python src/compute_metrics.py --predictions ${output_dir}/xlingual/gpt3/${engine}/predicted_examples.jsonl --track xlingual
 done

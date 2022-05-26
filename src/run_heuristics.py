@@ -37,7 +37,7 @@ if __name__ == "__main__":
     )
 
     os.makedirs(args.output_dir, exist_ok=True)
-    with open(os.path.join(args.output_dir, "predicted_examples.json"), "w") as fout:
+    with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
         for example in tqdm.tqdm(raw_datasets["test"]):
             if args.method == "copy_demo":
                 example["prediction"] = example["Positive Examples"][0]["output"]
