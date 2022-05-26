@@ -12,8 +12,9 @@ d1 = yaml.load(default_yaml)
 
 # cluster = "ai2/mosaic-cirrascale"
 # cluster = "ai2/aristo-cirrascale"
-cluster = "ai2/danielk-a100-cluster-50"
+# cluster = "ai2/danielk-a100-cluster-50"
 # cluster = "ai2/danielk-a100-cluster-30-preemtible"
+cluster = "ai2/yizhongw-v100-cluster-5"
 
 def set_argument_value(arguments, name, value):
     if name not in arguments:
@@ -109,9 +110,9 @@ if experiment_group == "model":
         # "google/t5-v1_1-xl",
         "google/t5-xl-lm-adapt",
         # "google/t5-xxl-lm-adapt",
-        "google/t5-small-lm-adapt",
-        "google/t5-large-lm-adapt",
-        "google/t5-base-lm-adapt",
+        # "google/t5-small-lm-adapt",
+        # "google/t5-large-lm-adapt",
+        # "google/t5-base-lm-adapt",
         ]
         
     for model_name in model_names:
@@ -289,15 +290,16 @@ if experiment_group == "splits":
 #--------------- no-finetuning transfer of pretrained models -------------------------
 if experiment_group == "eval_pretrained_models":
     model_names = [
-        "google/t5-xl-lm-adapt",
-        "google/t5-xxl-lm-adapt",
-        "bigscience/T0",
-        "bigscience/T0_3B",
+        # "google/t5-xl-lm-adapt",
+        # "google/t5-xxl-lm-adapt",
+        # "bigscience/T0",
+        # "bigscience/T0_3B",
         # "t5-large",
         # "google/t5-large-lm-adapt",
         # "google/mt5-xxl",
         "allenai/tk-instruct-11b-def-pos",
-        "allenai/tk-instruct-3b-def-pos", 
+        # "allenai/tk-instruct-3b-def-pos", 
+        # "allenai/mtk-instruct-3b-def-pos", 
     ]
 
     for model_name in model_names:
@@ -313,9 +315,6 @@ if experiment_group == "eval_pretrained_models":
             assert d['tasks'][0]['command'][3].endswith(".py")
             # d['tasks'][0]['command'] = ["python"] + d['tasks'][0]['command'][3:] 
             d['tasks'][0]['command'].remove("--do_train")
-            d['tasks'][0]['command'].remove("--do_eval")
-            d['tasks'][0]['command'].append("--evaluation_strategy")
-            d['tasks'][0]['command'].append("no")
             d['tasks'][0]['command'].remove("--bf16")
             # d['tasks'][0]['command'].remove("--deepspeed")
             # d['tasks'][0]['command'].remove("ds_configs/stage2.config")
@@ -329,6 +328,8 @@ if experiment_group == "eval_pretrained_models":
             set_argument_value(d['tasks'][0]['command'], "--num_pos_examples", encoding["num_pos_examples"])
             set_argument_value(d['tasks'][0]['command'], "--num_neg_examples", encoding["num_neg_examples"])
             set_argument_value(d['tasks'][0]['command'], "--add_explanation", encoding["add_explanation"])
+            set_argument_value(d['tasks'][0]['command'], "--evaluation_strategy", "no")
+
             if "tk_instruct" in encoding:
                 set_argument_value(d['tasks'][0]['command'], "--tk_instruct", encoding["tk_instruct"])
             
@@ -345,7 +346,7 @@ if experiment_group == "eval_pretrained_models":
             elif "3b" in model_name or "3B" in model_name or "-xl" in model_name:
                 set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 4)
             elif "11b" in model_name or "11B" in model_name or "-xxl" in model_name or model_name == "bigscience/T0":
-                set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 1)
+                set_argument_value(d['tasks'][0]['command'], "--per_device_eval_batch_size", 2)
                 d['tasks'][0]['resources']['gpuCount'] = 8
                 set_argument_value(d['tasks'][0]['command'], "--deepspeed", "ds_configs/stage3.config")
             
@@ -392,7 +393,6 @@ if experiment_group == "eval_ckpt":
             assert d['tasks'][0]['command'][3].endswith(".py")
             d['tasks'][0]['command'] = ["python"] + d['tasks'][0]['command'][3:] 
             d['tasks'][0]['command'].remove("--do_train")
-            d['tasks'][0]['command'].remove("--do_eval")
             d['tasks'][0]['command'].remove("--bf16")
             d['tasks'][0]['command'].remove("--deepspeed")
             d['tasks'][0]['command'].remove("ds_configs/stage2.config")
@@ -406,6 +406,8 @@ if experiment_group == "eval_ckpt":
             set_argument_value(d['tasks'][0]['command'], "--num_pos_examples", encoding["num_pos_examples"])
             set_argument_value(d['tasks'][0]['command'], "--num_neg_examples", encoding["num_neg_examples"])
             set_argument_value(d['tasks'][0]['command'], "--add_explanation", encoding["add_explanation"])
+            set_argument_value(d['tasks'][0]['command'], "--evaluation_strategy", "no")
+
             if "tk_instruct" in encoding:
                 set_argument_value(d['tasks'][0]['command'], "--tk_instruct", encoding["tk_instruct"])
 
