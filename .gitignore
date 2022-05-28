@@ -1,6 +1,7 @@
 # data
 data/
 beaker_configs/ni_*.yaml
+backup/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
