@@ -8,7 +8,7 @@ today = date.today().strftime("%m%d%Y")
 
 with open("beaker_configs/default_experiment.yaml", 'r') as f:
     default_yaml = f.read()
-d1 = yaml.load(default_yaml)
+d1 = yaml.load(default_yaml, Loader=yaml.FullLoader)
 
 # cluster = "ai2/mosaic-cirrascale"
 # cluster = "ai2/aristo-cirrascale"
