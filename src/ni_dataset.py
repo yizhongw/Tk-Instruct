@@ -65,6 +65,7 @@ class NaturalInstructions(datasets.GeneratorBasedBuilder):
             description=_DESCRIPTION,
             features=datasets.Features(
                 {
+                    "id": datasets.Value("string"),
                     "Task": datasets.Value("string"),
                     "Contributors": datasets.Value("string"),
                     "Source": [datasets.Value("string")],
@@ -91,6 +92,7 @@ class NaturalInstructions(datasets.GeneratorBasedBuilder):
                     #     "output": [datasets.Value("string")]
                     # }],
                     "Instance": {
+                        "id": datasets.Value("string"),
                         "input": datasets.Value("string"),
                         "output": [datasets.Value("string")]
                     },
@@ -164,6 +166,7 @@ class NaturalInstructions(datasets.GeneratorBasedBuilder):
                         instances = instances[:max_num_instances_per_task]
                     for idx, instance in enumerate(instances):
                         example = task_data.copy()
+                        example["id"] = instance["id"]
                         example["Instance"] = instance
                         yield f"{task_name}_{idx}", example
 
