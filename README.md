@@ -1,10 +1,9 @@
 # Tk-Instruct
 
-- This repo releases our implementation for the Tk-Instruct model in the [Natural Instructions V2 paper](https://arxiv.org/abs/2204.07705).
+- This repo releases our implementation for the Tk-Instruct model in the [Super-NaturalInstructions paper](https://arxiv.org/abs/2204.07705).
 - Tk-Instruct is a preliminary attempt towards general-purpose AI that can solve many NLP tasks by following in-context instructions (plain language task definitions or k-shot examples).
 - It is built based on the pretrained [T5 model](https://arxiv.org/abs/1910.10683), and finetuned on our [data](https://github.com/allenai/natural-instructions).
-- We are going to publish our demo soon. Stay tuned!
-<!-- - You can play with this model via our online [demo](https://instructions.apps.allenai.org/demo)! -->
+- You can play with the 11B model via our online [demo](https://instructions.apps.allenai.org/demo)!
 
 ## Requirements
 
@@ -26,13 +25,13 @@ Note: after the main exploration with 3B model, we train our 11B model on TPUs u
 
 ## Data
 
-Our models are trained and evaluated on [Natural Instructions V2](https://github.com/allenai/natural-instructions), which can be cloned by running:
+Our models are trained and evaluated on [Super-NaturalInstructions](https://github.com/allenai/natural-instructions), which can be cloned by running:
 
 ```bash
 git clone git@github.com:allenai/natural-instructions.git data
 ```
 
-Since Natural Instructions V2 didn't provide an official split for the development set, in order to do evaluation during training time, you can mannualy create a `dev_tasks.txt` in the `data/splits/default` folder. We found it unclear what should be a meaningful validation set, under such cross-task generalization setting. You can use a part of the training tasks for validation, or you can set apart tasks in some categories for validation.
+Since Super-NaturalInstructions didn't provide an official split for the development set, in order to do evaluation during training time, you can mannualy create a `dev_tasks.txt` in the `data/splits/default` folder. We found it unclear what should be a meaningful validation set, under such cross-task generalization setting. You can use a part of the training tasks for validation, or you can set apart tasks in some categories for validation.
 
 If you want to use the T5 code [here](https://github.com/google-research/text-to-text-transfer-transformer), you can convert the data into text2text format with [`scripts/convert_data_to_s2s.sh`](scripts/convert_data_to_s2s.sh).
 
@@ -119,10 +118,10 @@ We will keep adding the predictions and performance of new models into this repo
 ## Citation
 
 ```bib
-@article{wang2022benchmarking,
-  title={Benchmarking Generalization via In-Context Instructions on 1,600+ Language Tasks},
-  author={Wang, Yizhong and Mishra, Swaroop and Alipoormolabashi, Pegah and Kordi, Yeganeh and others},
-  journal={arXiv preprint arXiv:2204.07705},
+@inproceedings{supernaturalinstructions,
+  title={Super-NaturalInstructions:Generalization via Declarative Instructions on 1600+ Tasks},
+  author={Wang, Yizhong and Mishra, Swaroop and Alipoormolabashi, Pegah and Kordi, Yeganeh and Mirzaei, Amirreza and Arunkumar, Anjana and Ashok, Arjun and Dhanasekaran, Arut Selvan and Naik, Atharva and Stap, David and others},
+  booktitle={EMNLP},
   year={2022}
 }
 ```
